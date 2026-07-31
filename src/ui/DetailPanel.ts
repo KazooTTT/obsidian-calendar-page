@@ -15,6 +15,11 @@ export interface DetailPanelActions {
 	onOpen: (path: string) => void;
 	onCreate: (kind: Periodicity, date: Moment) => void;
 	onDelete: (path: string) => void;
+	onBindPreview: (
+		target: HTMLElement,
+		path: string,
+		label: string,
+	) => void;
 }
 
 export function buildDetailEntries(
@@ -35,16 +40,48 @@ export function buildDetailEntries(
 	});
 }
 
+export function buildMonthPeriodEntries(
+	month: Moment,
+	notes: IndexedNotes,
+): DetailEntry[] {
+	const periods: Array<{ kind: Periodicity; date: Moment }> = [
+		{ kind: 'monthly', date: month.clone().endOf('month') },
+	];
+
+	if ((month.month() + 1) % 3 === 0) {
+		periods.push({
+			kind: 'quarterly',
+			date: month.clone().endOf('quarter'),
+		});
+	}
+	if (month.month() === 11) {
+		periods.push({
+			kind: 'yearly',
+			date: month.clone().endOf('year'),
+		});
+	}
+
+	return periods.map(({ kind, date }) => {
+		const file = notes[kind][getDateUid(date, kind)] ?? null;
+		return {
+			kind,
+			label: PERIODICITY_LABELS[kind],
+			title: file?.basename ?? null,
+			dateRange: formatDetailRange(date, kind),
+			exists: !!file,
+			path: file?.path ?? null,
+		};
+	});
+}
+
 export class DetailPanel {
 	private container: HTMLElement;
-	private titleEl: HTMLElement;
 	private listEl: HTMLElement;
 	private actions: DetailPanelActions | null = null;
-	private currentDate: Moment | null = null;
+	private currentMonth: Moment | null = null;
 
 	constructor(parent: HTMLElement) {
 		this.container = parent.createDiv('periodic-calendar-page__detail');
-		this.titleEl = this.container.createDiv('periodic-calendar-page__detail-title');
 		this.listEl = this.container.createDiv('periodic-calendar-page__detail-list');
 	}
 
@@ -56,12 +93,11 @@ export class DetailPanel {
 		return this.container;
 	}
 
-	render(date: Moment, notes: IndexedNotes): void {
-		this.currentDate = date.clone();
-		this.titleEl.setText(date.format('YYYY-MM-DD dddd'));
+	renderMonth(month: Moment, notes: IndexedNotes): void {
+		this.currentMonth = month.clone().startOf('month');
 		this.listEl.empty();
 
-		const entries = buildDetailEntries(date, notes);
+		const entries = buildMonthPeriodEntries(month, notes);
 		for (const entry of entries) {
 			this.renderEntry(entry);
 		}
@@ -72,6 +108,9 @@ export class DetailPanel {
 		card.addClass(`periodic-calendar-page__detail-card--${entry.kind}`);
 		if (entry.exists) {
 			card.addClass('is-exists');
+			if (entry.path) {
+				this.actions?.onBindPreview(card, entry.path, entry.label);
+			}
 		} else {
 			card.addClass('is-missing');
 		}
@@ -110,8 +149,8 @@ export class DetailPanel {
 			}, true);
 		} else {
 			this.createActionButton(actionBar, '创建', () => {
-				if (this.currentDate) {
-					this.actions?.onCreate(entry.kind, this.currentDate);
+				if (this.currentMonth) {
+					this.actions?.onCreate(entry.kind, this.currentMonth);
 				}
 			});
 		}

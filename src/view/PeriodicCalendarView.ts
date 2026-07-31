@@ -23,6 +23,7 @@ import { buildDotCountMap, buildWordCountMap } from '../services/WordCounter';
 import type PeriodicCalendarPagePlugin from '../main';
 import { CalendarRenderer } from '../ui/CalendarRenderer';
 import { buildDetailEntries, DetailPanel } from '../ui/DetailPanel';
+import { HoverPreview } from '../ui/HoverPreview';
 import { StatsRenderer } from '../ui/StatsRenderer';
 import {
 	showNoteContextMenu,
@@ -49,6 +50,7 @@ export class PeriodicCalendarView extends ItemView {
 	private renderer: CalendarRenderer | null = null;
 	private statsRenderer: StatsRenderer | null = null;
 	private detailPanel: DetailPanel | null = null;
+	private hoverPreview: HoverPreview | null = null;
 	private pageMode: PageMode = 'calendar';
 	private zoom: CalendarZoom = 'day';
 	private displayMonth = getMoment().startOf('month');
@@ -98,8 +100,12 @@ export class PeriodicCalendarView extends ItemView {
 		}
 
 		const menuActions = this.createMenuActions();
+		this.hoverPreview = new HoverPreview(this.app, container, this);
 
 		this.renderer = new CalendarRenderer(container, {
+			onBindPreview: (target, file, label) => {
+				this.hoverPreview?.bind(target, file, label);
+			},
 			onSelectDate: (date, metaKey) => {
 				this.selectedDate = date.startOf('day');
 				if (metaKey) {
@@ -335,6 +341,12 @@ export class PeriodicCalendarView extends ItemView {
 			onDelete: (path) => {
 				void this.handleDeleteNote(path);
 			},
+			onBindPreview: (target, path, label) => {
+				const file = this.app.vault.getAbstractFileByPath(path);
+				if (file instanceof TFile) {
+					this.hoverPreview?.bind(target, file, label);
+				}
+			},
 		});
 
 		this.registerVaultEvents();
@@ -342,9 +354,11 @@ export class PeriodicCalendarView extends ItemView {
 	}
 
 	async onClose(): Promise<void> {
+		this.hoverPreview?.hide();
 		this.renderer = null;
 		this.statsRenderer = null;
 		this.detailPanel = null;
+		this.hoverPreview = null;
 	}
 
 	setPageMode(mode: PageMode): void {
@@ -416,6 +430,7 @@ export class PeriodicCalendarView extends ItemView {
 		if (!this.renderer || !this.detailPanel) {
 			return;
 		}
+		this.hoverPreview?.hide();
 
 		const monthlyFile = getMonthlyNoteForMonth(
 			this.notes.monthly,
@@ -447,7 +462,7 @@ export class PeriodicCalendarView extends ItemView {
 		}
 
 		this.detailPanel.getContainer().style.display = '';
-		this.detailPanel.render(this.selectedDate, this.notes);
+		this.detailPanel.renderMonth(this.displayMonth, this.notes);
 	}
 
 	private getStatsDisplayYears(): number[] {

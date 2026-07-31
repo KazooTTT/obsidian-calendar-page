@@ -17,6 +17,11 @@ import {
 } from '../utils/dates';
 
 export interface CalendarRendererOptions {
+	onBindPreview: (
+		target: HTMLElement,
+		file: TFile,
+		label: string,
+	) => void;
 	onSelectDate: (date: Moment, metaKey: boolean) => void;
 	onSelectWeek: (weekStart: Moment, metaKey: boolean) => void;
 	onSelectMonth: (month: Moment, metaKey: boolean) => void;
@@ -315,6 +320,7 @@ export class CalendarRenderer {
 			weekCell.setText(String(weekStart.isoWeek()));
 			if (weeklyFile) {
 				this.appendWordDots(weekCell, weeklyFile, dotCounts, wordsPerDot, 'weekly');
+				this.options.onBindPreview(weekCell, weeklyFile, '周报');
 			}
 			weekCell.addEventListener('click', (event) => {
 				this.options.onSelectWeek(weekStart, this.isNavigateClick(event));
@@ -346,6 +352,7 @@ export class CalendarRenderer {
 				const dailyFile = notes.daily[getDateUid(day, 'daily')];
 				if (dailyFile) {
 					this.appendWordDots(markers, dailyFile, dotCounts, wordsPerDot, 'daily');
+					this.options.onBindPreview(cell, dailyFile, '日记');
 				}
 				if (isLastDayOfMonth(day) && notes.monthly[getDateUid(day, 'monthly')]) {
 					markers.createDiv(
@@ -405,6 +412,9 @@ export class CalendarRenderer {
 				cls: 'periodic-calendar-page__year-tile-year',
 				text: `${year}年`,
 			});
+			if (yearlyFile) {
+				this.options.onBindPreview(tile, yearlyFile, '年报');
+			}
 
 			const meta = tile.createDiv('periodic-calendar-page__year-tile-meta');
 			meta.createSpan({
@@ -473,6 +483,9 @@ export class CalendarRenderer {
 			cls: 'periodic-calendar-page__year-period-range',
 			text: `日期范围：${formatYearlyRange(yearEnd)}`,
 		});
+		if (yearlyFile) {
+			this.options.onBindPreview(yearlyCard, yearlyFile, '年报');
+		}
 
 		yearlyCard.addEventListener('click', (event) => {
 			this.options.onSelectYearly(yearEnd.clone(), this.isNavigateClick(event));
@@ -530,6 +543,9 @@ export class CalendarRenderer {
 				cls: 'periodic-calendar-page__year-period-badge periodic-calendar-page__year-period-badge--quarterly',
 				text: '季报',
 			});
+			if (quarterlyFile) {
+				this.options.onBindPreview(quarterFoot, quarterlyFile, '季报');
+			}
 
 			const footMain = quarterFoot.createDiv(
 				'periodic-calendar-page__year-quarter-foot-main',
@@ -569,6 +585,7 @@ export class CalendarRenderer {
 		const monthEnd = month.clone().endOf('month');
 		const dailyCount = countDailyNotesInMonth(notes, month);
 		const hasMonthly = !!notes.monthly[getDateUid(monthEnd, 'monthly')];
+		const monthlyFile = notes.monthly[getDateUid(monthEnd, 'monthly')];
 
 		const cell = parent.createDiv('periodic-calendar-page__year-month');
 		if (grouped) {
@@ -595,6 +612,7 @@ export class CalendarRenderer {
 			markers.createDiv(
 				'periodic-calendar-page__marker periodic-calendar-page__marker--monthly',
 			);
+			this.options.onBindPreview(cell, monthlyFile!, '月报');
 		}
 
 		cell.addEventListener('click', (event) => {
@@ -658,6 +676,7 @@ export class CalendarRenderer {
 		const hints = [
 			zoomHints[zoom],
 			zoom === 'year' ? '点击季度底栏或月份进入详情' : null,
+			'悬浮已有笔记：预览内容',
 			wordsPerDot > 0 && zoom === 'day'
 				? `日记圆点：每 ${wordsPerDot} 字一个，最多 5 个`
 				: null,
