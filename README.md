@@ -40,7 +40,7 @@ Obsidian 全屏周期性笔记日历。从 [Periodic Notes](https://github.com/l
 ### BRAT（推荐）
 
 1. 安装 [BRAT](https://github.com/TfTHacker/obsidian42-brat)
-2. 添加 Beta 插件：`KazooTTT/periodic-calendar-page`
+2. 添加 Beta 插件：`KazooTTT/obsidian-calendar-page`
 3. 在 Obsidian 中启用 **Periodic Calendar Page**
 
 ### 手动安装
@@ -54,8 +54,8 @@ Obsidian 全屏周期性笔记日历。从 [Periodic Notes](https://github.com/l
 ### 从源码构建
 
 ```bash
-git clone https://github.com/KazooTTT/periodic-calendar-page.git
-cd periodic-calendar-page
+git clone https://github.com/KazooTTT/obsidian-calendar-page.git
+cd obsidian-calendar-page
 npm install
 npm run build
 ```
@@ -124,7 +124,7 @@ MIT — see [LICENSE](LICENSE)
 
 ### Install
 
-See [docs/INSTALL.md](docs/INSTALL.md). Quick option: install via [BRAT](https://github.com/TfTHacker/obsidian42-brat) using `KazooTTT/periodic-calendar-page`.
+See [docs/INSTALL.md](docs/INSTALL.md). Quick option: install via [BRAT](https://github.com/TfTHacker/obsidian42-brat) using `KazooTTT/obsidian-calendar-page`.
 
 ### Commands
 

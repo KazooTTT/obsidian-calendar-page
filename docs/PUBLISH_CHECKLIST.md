@@ -17,7 +17,7 @@
 
 - [ ] 创建首个 GitHub Release（tag `0.8.15`，附上 `manifest.json` / `main.js` / `styles.css`）
 - [ ] 在 README 中将 `<repo-url>` 替换为正式仓库地址（若尚未替换）
-- [ ] 测试 BRAT 从 `KazooTTT/periodic-calendar-page` 安装
+- [ ] 测试 BRAT 从 `KazooTTT/obsidian-calendar-page` 安装
 
 ## 社区插件市场上架（可选，尚未完成）
 

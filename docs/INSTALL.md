@@ -1,6 +1,6 @@
 # 安装指南
 
-仓库地址：[github.com/KazooTTT/periodic-calendar-page](https://github.com/KazooTTT/periodic-calendar-page)
+仓库地址：[github.com/KazooTTT/obsidian-calendar-page](https://github.com/KazooTTT/obsidian-calendar-page)
 
 ## 前置依赖
 
@@ -17,7 +17,7 @@
 3. 填入仓库：
 
    ```
-   KazooTTT/periodic-calendar-page
+   KazooTTT/obsidian-calendar-page
    ```
 
 4. 选择跟踪分支 `main`（或指定 release tag）
@@ -27,7 +27,7 @@
 
 ## 方式二：手动安装
 
-1. 打开 [Releases](https://github.com/KazooTTT/periodic-calendar-page/releases)（或克隆仓库）
+1. 打开 [Releases](https://github.com/KazooTTT/obsidian-calendar-page/releases)（或克隆仓库）
 2. 将以下三个文件放入 vault：
 
    ```
@@ -43,8 +43,8 @@
 ### 从源码构建后手动安装
 
 ```bash
-git clone https://github.com/KazooTTT/periodic-calendar-page.git
-cd periodic-calendar-page
+git clone https://github.com/KazooTTT/obsidian-calendar-page.git
+cd obsidian-calendar-page
 npm install
 npm run build
 ```
