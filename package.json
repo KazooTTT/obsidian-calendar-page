@@ -1,6 +1,6 @@
 {
 	"name": "periodic-calendar-page",
-	"version": "0.8.19",
+	"version": "0.8.20",
 	"description": "Full-page periodic notes calendar for Obsidian",
 	"main": "main.js",
 	"type": "module",

@@ -1,7 +1,7 @@
 import type { Moment } from 'moment';
 import { PERIODICITY_LABELS } from '../constants';
 import type { DetailEntry, IndexedNotes, Periodicity } from '../types';
-import { formatDetailRange, getDateUid } from '../utils/dates';
+import { buildMonthGrid, formatDetailRange, getDateUid } from '../utils/dates';
 
 const DETAIL_ORDER: Periodicity[] = [
 	'daily',
@@ -43,10 +43,16 @@ export function buildDetailEntries(
 export function buildMonthPeriodEntries(
 	month: Moment,
 	notes: IndexedNotes,
-): DetailEntry[] {
-	const periods: Array<{ kind: Periodicity; date: Moment }> = [
-		{ kind: 'monthly', date: month.clone().endOf('month') },
-	];
+	showWeeklyReports = false,
+): Array<DetailEntry & { date: Moment }> {
+	const periods: Array<{ kind: Periodicity; date: Moment }> =
+		showWeeklyReports
+			? buildMonthGrid(month).map((week) => ({
+					kind: 'weekly',
+					date: week[0]!,
+				}))
+			: [];
+	periods.push({ kind: 'monthly', date: month.clone().endOf('month') });
 
 	if ((month.month() + 1) % 3 === 0) {
 		periods.push({
@@ -64,6 +70,7 @@ export function buildMonthPeriodEntries(
 	return periods.map(({ kind, date }) => {
 		const file = notes[kind][getDateUid(date, kind)] ?? null;
 		return {
+			date,
 			kind,
 			label: PERIODICITY_LABELS[kind],
 			title: file?.basename ?? null,
@@ -78,7 +85,6 @@ export class DetailPanel {
 	private container: HTMLElement;
 	private listEl: HTMLElement;
 	private actions: DetailPanelActions | null = null;
-	private currentMonth: Moment | null = null;
 
 	constructor(parent: HTMLElement) {
 		this.container = parent.createDiv('periodic-calendar-page__detail');
@@ -93,17 +99,20 @@ export class DetailPanel {
 		return this.container;
 	}
 
-	renderMonth(month: Moment, notes: IndexedNotes): void {
-		this.currentMonth = month.clone().startOf('month');
+	renderMonth(
+		month: Moment,
+		notes: IndexedNotes,
+		showWeeklyReports: boolean,
+	): void {
 		this.listEl.empty();
 
-		const entries = buildMonthPeriodEntries(month, notes);
+		const entries = buildMonthPeriodEntries(month, notes, showWeeklyReports);
 		for (const entry of entries) {
-			this.renderEntry(entry);
+			this.renderEntry(entry, entry.date);
 		}
 	}
 
-	private renderEntry(entry: DetailEntry): void {
+	private renderEntry(entry: DetailEntry, date: Moment): void {
 		const card = this.listEl.createDiv('periodic-calendar-page__detail-card');
 		card.addClass(`periodic-calendar-page__detail-card--${entry.kind}`);
 		if (entry.exists) {
@@ -124,7 +133,11 @@ export class DetailPanel {
 		const body = header.createDiv('periodic-calendar-page__detail-card-body');
 		body.createDiv({
 			cls: 'periodic-calendar-page__detail-card-title',
-			text: entry.exists ? entry.title ?? '—' : '未创建',
+			text: entry.exists
+				? entry.title ?? '—'
+				: entry.kind === 'weekly'
+					? `第 ${date.isoWeek()} 周 · 未创建`
+					: '未创建',
 		});
 		if (entry.dateRange) {
 			body.createDiv({
@@ -149,9 +162,7 @@ export class DetailPanel {
 			}, true);
 		} else {
 			this.createActionButton(actionBar, '创建', () => {
-				if (this.currentMonth) {
-					this.actions?.onCreate(entry.kind, this.currentMonth);
-				}
+				this.actions?.onCreate(entry.kind, date);
 			});
 		}
 	}

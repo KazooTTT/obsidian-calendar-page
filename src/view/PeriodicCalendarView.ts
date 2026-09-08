@@ -462,7 +462,11 @@ export class PeriodicCalendarView extends ItemView {
 		}
 
 		this.detailPanel.getContainer().style.display = '';
-		this.detailPanel.renderMonth(this.displayMonth, this.notes);
+		this.detailPanel.renderMonth(
+			this.displayMonth,
+			this.notes,
+			this.plugin.settings.showWeeklyReportsInDetail,
+		);
 	}
 
 	private getStatsDisplayYears(): number[] {

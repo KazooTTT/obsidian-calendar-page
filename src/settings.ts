@@ -3,10 +3,12 @@ import type PeriodicCalendarPagePlugin from './main';
 
 export interface PeriodicCalendarSettings {
 	wordsPerDot: number;
+	showWeeklyReportsInDetail: boolean;
 }
 
 export const DEFAULT_SETTINGS: PeriodicCalendarSettings = {
 	wordsPerDot: 250,
+	showWeeklyReportsInDetail: false,
 };
 
 export class PeriodicCalendarSettingTab extends PluginSettingTab {
@@ -31,6 +33,19 @@ export class PeriodicCalendarSettingTab extends PluginSettingTab {
 						const parsed = Number(value);
 						this.plugin.settings.wordsPerDot =
 							Number.isFinite(parsed) && parsed >= 0 ? parsed : 250;
+						await this.plugin.saveSettings();
+						this.plugin.refreshOpenViews();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName('在右侧显示周报')
+			.setDesc('开启后，在右侧周期面板中显示当前月历包含的所有周报。')
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showWeeklyReportsInDetail)
+					.onChange(async (value) => {
+						this.plugin.settings.showWeeklyReportsInDetail = value;
 						await this.plugin.saveSettings();
 						this.plugin.refreshOpenViews();
 					}),
