@@ -1,7 +1,7 @@
 {
 	"id": "periodic-calendar-page",
 	"name": "KazooTTT Periodic Calendar Page",
-	"version": "0.8.20",
+	"version": "0.8.21",
 	"minAppVersion": "1.5.0",
 	"description": "Full-page calendar for daily, weekly, monthly, quarterly, and yearly notes from Periodic Notes.",
 	"author": "KazooTTT",
