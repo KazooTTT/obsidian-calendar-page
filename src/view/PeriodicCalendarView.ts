@@ -1,5 +1,5 @@
 import type { Moment } from 'moment';
-import { ItemView, TFile, WorkspaceLeaf, type App } from 'obsidian';
+import { ItemView, Notice, TFile, WorkspaceLeaf, type App } from 'obsidian';
 import {
 	PERIODICITY_LABELS,
 	PERIODIC_CALENDAR_ICON,
@@ -92,10 +92,7 @@ export class PeriodicCalendarView extends ItemView {
 		container.addClass('periodic-calendar-page-root');
 
 		if (!isPeriodicNotesAvailable(this.app)) {
-			container.createDiv({
-				cls: 'periodic-calendar-page__error',
-				text: '未检测到 Periodic Notes 插件，请先安装并启用。',
-			});
+			this.renderMissingDependency(container);
 			return;
 		}
 
@@ -359,6 +356,33 @@ export class PeriodicCalendarView extends ItemView {
 		this.statsRenderer = null;
 		this.detailPanel = null;
 		this.hoverPreview = null;
+	}
+
+	private renderMissingDependency(container: HTMLElement): void {
+		new Notice('日记日历依赖 Periodic Notes，请先安装并启用该插件。', 8000);
+
+		const panel = container.createDiv('periodic-calendar-page__dependency');
+		panel.createDiv({
+			cls: 'periodic-calendar-page__dependency-title',
+			text: '需要 Periodic Notes',
+		});
+		panel.createDiv({
+			cls: 'periodic-calendar-page__dependency-body',
+			text: '本插件依赖 Periodic Notes 读取日记 / 周报 / 月报 / 季报 / 年报的文件夹与格式配置。请先安装并启用后再打开本视图。',
+		});
+
+		const steps = panel.createEl('ol', {
+			cls: 'periodic-calendar-page__dependency-steps',
+		});
+		steps.createEl('li', {
+			text: '打开「设置 → 社区插件」',
+		});
+		steps.createEl('li', {
+			text: '搜索并安装 Periodic Notes（若已安装则直接启用）',
+		});
+		steps.createEl('li', {
+			text: '启用后重新打开「日记日历」',
+		});
 	}
 
 	setPageMode(mode: PageMode): void {

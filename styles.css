@@ -930,6 +930,50 @@
 	margin-bottom: 12px;
 }
 
+.periodic-calendar-page__dependency {
+	max-width: 520px;
+	margin: 24px 20px;
+	padding: 16px 18px;
+	border-radius: 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-left: 4px solid var(--text-error);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+}
+
+.periodic-calendar-page__dependency-title {
+	font-size: 1.05em;
+	font-weight: 700;
+	color: var(--text-normal);
+	margin-bottom: 8px;
+}
+
+.periodic-calendar-page__dependency-body {
+	font-size: 0.9em;
+	line-height: 1.55;
+	color: var(--text-muted);
+	margin-bottom: 12px;
+}
+
+.periodic-calendar-page__dependency-steps {
+	margin: 0;
+	padding-left: 1.3em;
+	font-size: 0.88em;
+	line-height: 1.7;
+	color: var(--text-normal);
+}
+
+.periodic-calendar-page__settings-dependency {
+	margin-bottom: 16px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-muted);
+	font-size: 0.85em;
+	line-height: 1.5;
+}
+
 .periodic-calendar-page__hover-preview {
 	position: fixed;
 	z-index: var(--layer-popover, 1000);

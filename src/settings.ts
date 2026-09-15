@@ -20,6 +20,11 @@ export class PeriodicCalendarSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
+		containerEl.createDiv({
+			cls: 'periodic-calendar-page__settings-dependency',
+			text: '依赖：需要先安装并启用 Periodic Notes。本插件会读取其日记 / 周报 / 月报 / 季报 / 年报配置。',
+		});
+
 		new Setting(containerEl)
 			.setName('每个圆点代表字数')
 			.setDesc(
